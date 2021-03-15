@@ -9,14 +9,14 @@ import com.bullhornsdk.data.model.parameter.QueryParams;
 import com.bullhornsdk.data.model.parameter.standard.ParamFactory;
 import com.bullhornsdk.data.model.response.crud.CrudResponse;
 import com.client.core.AppContext;
-import com.client.core.base.model.relatedentity.BullhornRelatedEntity;
-import com.client.core.base.model.relatedentity.StandardRelatedEntity;
+import com.client.core.base.model.relatedentity.*;
 import com.client.core.base.util.Utility;
 import org.apache.log4j.Logger;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class AbstractHelper<T extends BullhornEntity> implements Helper<T> {
 
@@ -157,6 +157,22 @@ public abstract class AbstractHelper<T extends BullhornEntity> implements Helper
         return bullhornData.queryForList(PlacementCommission.class, "placement.id=" + placementId + " AND user.id IS NOT NULL", fields, params);
     }
 
+    public List<Skill> getSkills(Integer categoryId) {
+        Category category = findCategory(categoryId, CategoryRelatedEntity.CATEGORY);
+        return category.getSkills().getData()
+                .stream()
+                .map(skill -> findSkill(skill.getId(), SkillRelatedEntity.SKILL))
+                .collect(Collectors.toList());
+    }
+
+    public List<Specialty> getSpecialities(Integer categoryId) {
+        Category category = findCategory(categoryId, CategoryRelatedEntity.CATEGORY);
+        return category.getSpecialties().getData()
+                .stream()
+                .map(specialty -> findSpeciality(specialty.getId(), SpecialityRelatedEntity.SPECIALITY))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public BullhornData getBullhornData() {
         return bullhornData;
@@ -224,6 +240,18 @@ public abstract class AbstractHelper<T extends BullhornEntity> implements Helper
 
     protected List<PlacementCommission> getCommissions(Integer placementId, BullhornRelatedEntity entity) {
         return getCommissions(placementId, getFields(entity));
+    }
+
+    protected Category findCategory(Integer id, BullhornRelatedEntity entity) {
+        return findEntity(Category.class, id, entity);
+    }
+
+    protected Skill findSkill(Integer id, BullhornRelatedEntity entity) {
+        return findEntity(Skill.class, id, entity);
+    }
+
+    protected Specialty findSpeciality(Integer id, BullhornRelatedEntity entity) {
+        return findEntity(Specialty.class, id, entity);
     }
 
     protected Set<String> getFields(BullhornRelatedEntity relatedEntity) {

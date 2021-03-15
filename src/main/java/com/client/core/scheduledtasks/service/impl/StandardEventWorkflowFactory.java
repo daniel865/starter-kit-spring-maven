@@ -44,10 +44,12 @@ public class StandardEventWorkflowFactory implements EventWorkflowFactory {
     private final Map<Class<? extends BullhornEntity>, Map<? extends BullhornRelatedEntity, Set<String>>> allRelatedEntityFields;
 
     private final List<EventTask<Appointment, AppointmentScheduledTaskHelper, AppointmentEventTraverser>> appointmentNodes;
+    private final List<EventTask<AppointmentAttendee, AppointmentAttendeeScheduledTaskHelper, AppointmentAttendeeTraverser>> appointmentAttendeeNodes;
     private final List<EventTask<Candidate, CandidateScheduledTaskHelper, CandidateEventTraverser>> candidateNodes;
     private final List<EventTask<CandidateEducation, CandidateEducationScheduledTaskHelper, CandidateEducationEventTraverser>> candidateEducationNodes;
     private final List<EventTask<CandidateReference, CandidateReferenceScheduledTaskHelper, CandidateReferenceEventTraverser>> candidateReferenceNodes;
     private final List<EventTask<CandidateWorkHistory, CandidateWorkHistoryScheduledTaskHelper, CandidateWorkHistoryEventTraverser>> candidateWorkHistoryNodes;
+    private final List<EventTask<Category, CategoryScheduledTaskHelper, CategoryEventTraverser>> categoryNodes;
     private final List<EventTask<ClientContact, ClientContactScheduledTaskHelper, ClientContactEventTraverser>> clientContactNodes;
     private final List<EventTask<ClientCorporation, ClientCorporationScheduledTaskHelper, ClientCorporationEventTraverser>> clientCorporationNodes;
     private final List<EventTask<CorporateUser, CorporateUserScheduledTaskHelper, CorporateUserEventTraverser>> corporateUserNodes;
@@ -60,6 +62,8 @@ public class StandardEventWorkflowFactory implements EventWorkflowFactory {
     private final List<EventTask<PlacementCommission, PlacementCommissionScheduledTaskHelper, PlacementCommissionEventTraverser>> placementCommissionNodes;
     private final List<EventTask<Placement, PlacementScheduledTaskHelper, PlacementEventTraverser>> placementNodes;
     private final List<EventTask<Sendout, SendoutScheduledTaskHelper, SendoutEventTraverser>> sendoutNodes;
+    private final List<EventTask<Skill, SkillScheduledTaskHelper, SkillEventTraverser>> skillNodes;
+    private final List<EventTask<Specialty, SpecialityScheduledTaskHelper, SpecialityEventTraverser>> specialityNodes;
     private final List<EventTask<Task, TaskScheduledTaskHelper, TaskEventTraverser>> taskNodes;
 
     private final List<EventTask<CandidateCertification, CandidateCertificationScheduledTaskHelper, CandidateCertificationEventTraverser>> candidateCertificationNodes;
@@ -70,16 +74,40 @@ public class StandardEventWorkflowFactory implements EventWorkflowFactory {
     private final BullhornData bullhornData;
 
     @Autowired
-    public StandardEventWorkflowFactory(Optional<List<EventTask<Appointment, AppointmentScheduledTaskHelper, AppointmentEventTraverser>>> appointmentNodes, Optional<List<EventTask<Candidate, CandidateScheduledTaskHelper, CandidateEventTraverser>>> candidateNodes, Optional<List<EventTask<CandidateEducation, CandidateEducationScheduledTaskHelper, CandidateEducationEventTraverser>>> candidateEducationNodes, Optional<List<EventTask<CandidateReference, CandidateReferenceScheduledTaskHelper, CandidateReferenceEventTraverser>>> candidateReferenceNodes, Optional<List<EventTask<CandidateWorkHistory, CandidateWorkHistoryScheduledTaskHelper, CandidateWorkHistoryEventTraverser>>> candidateWorkHistoryNodes, Optional<List<EventTask<ClientContact, ClientContactScheduledTaskHelper, ClientContactEventTraverser>>> clientContactNodes, Optional<List<EventTask<ClientCorporation, ClientCorporationScheduledTaskHelper, ClientCorporationEventTraverser>>> clientCorporationNodes, Optional<List<EventTask<CorporateUser, CorporateUserScheduledTaskHelper, CorporateUserEventTraverser>>> corporateUserNodes, Optional<List<EventTask<JobOrder, JobOrderScheduledTaskHelper, JobOrderEventTraverser>>> jobOrderNodes, Optional<List<EventTask<JobSubmission, JobSubmissionScheduledTaskHelper, JobSubmissionEventTraverser>>> jobSubmissionNodes, Optional<List<EventTask<Lead, LeadScheduledTaskHelper, LeadEventTraverser>>> leadNodes, Optional<List<EventTask<Note, NoteScheduledTaskHelper, NoteEventTraverser>>> noteNodes, Optional<List<EventTask<Opportunity, OpportunityScheduledTaskHelper, OpportunityEventTraverser>>> opportunityNodes, Optional<List<EventTask<PlacementChangeRequest, PlacementChangeRequestScheduledTaskHelper, PlacementChangeRequestEventTraverser>>> placementChangeRequestNodes, Optional<List<EventTask<PlacementCommission, PlacementCommissionScheduledTaskHelper, PlacementCommissionEventTraverser>>> placementCommissionNodes, Optional<List<EventTask<Placement, PlacementScheduledTaskHelper, PlacementEventTraverser>>> placementNodes, Optional<List<EventTask<Sendout, SendoutScheduledTaskHelper, SendoutEventTraverser>>> sendoutNodes, Optional<List<EventTask<Task, TaskScheduledTaskHelper, TaskEventTraverser>>> taskNodes,
+    public StandardEventWorkflowFactory(Optional<List<EventTask<Appointment, AppointmentScheduledTaskHelper, AppointmentEventTraverser>>> appointmentNodes,
+                                        Optional<List<EventTask<AppointmentAttendee, AppointmentAttendeeScheduledTaskHelper, AppointmentAttendeeTraverser>>> appointmentAttendeeNodes,
+                                        Optional<List<EventTask<Candidate, CandidateScheduledTaskHelper, CandidateEventTraverser>>> candidateNodes,
+                                        Optional<List<EventTask<CandidateEducation, CandidateEducationScheduledTaskHelper, CandidateEducationEventTraverser>>> candidateEducationNodes,
+                                        Optional<List<EventTask<CandidateReference, CandidateReferenceScheduledTaskHelper, CandidateReferenceEventTraverser>>> candidateReferenceNodes,
+                                        Optional<List<EventTask<CandidateWorkHistory, CandidateWorkHistoryScheduledTaskHelper, CandidateWorkHistoryEventTraverser>>> candidateWorkHistoryNodes,
+                                        Optional<List<EventTask<Category, CategoryScheduledTaskHelper, CategoryEventTraverser>>> categoryNodes,
+                                        Optional<List<EventTask<ClientContact, ClientContactScheduledTaskHelper, ClientContactEventTraverser>>> clientContactNodes,
+                                        Optional<List<EventTask<ClientCorporation, ClientCorporationScheduledTaskHelper, ClientCorporationEventTraverser>>> clientCorporationNodes,
+                                        Optional<List<EventTask<CorporateUser, CorporateUserScheduledTaskHelper, CorporateUserEventTraverser>>> corporateUserNodes,
+                                        Optional<List<EventTask<JobOrder, JobOrderScheduledTaskHelper, JobOrderEventTraverser>>> jobOrderNodes,
+                                        Optional<List<EventTask<JobSubmission, JobSubmissionScheduledTaskHelper, JobSubmissionEventTraverser>>> jobSubmissionNodes,
+                                        Optional<List<EventTask<Lead, LeadScheduledTaskHelper, LeadEventTraverser>>> leadNodes,
+                                        Optional<List<EventTask<Note, NoteScheduledTaskHelper, NoteEventTraverser>>> noteNodes,
+                                        Optional<List<EventTask<Opportunity, OpportunityScheduledTaskHelper, OpportunityEventTraverser>>> opportunityNodes,
+                                        Optional<List<EventTask<PlacementChangeRequest, PlacementChangeRequestScheduledTaskHelper, PlacementChangeRequestEventTraverser>>> placementChangeRequestNodes,
+                                        Optional<List<EventTask<PlacementCommission, PlacementCommissionScheduledTaskHelper, PlacementCommissionEventTraverser>>> placementCommissionNodes,
+                                        Optional<List<EventTask<Placement, PlacementScheduledTaskHelper, PlacementEventTraverser>>> placementNodes,
+                                        Optional<List<EventTask<Sendout, SendoutScheduledTaskHelper, SendoutEventTraverser>>> sendoutNodes,
+                                        Optional<List<EventTask<Skill, SkillScheduledTaskHelper, SkillEventTraverser>>> skillNodes,
+                                        Optional<List<EventTask<Specialty, SpecialityScheduledTaskHelper, SpecialityEventTraverser>>> specialityNodes,
+                                        Optional<List<EventTask<Task, TaskScheduledTaskHelper, TaskEventTraverser>>> taskNodes,
                                         Optional<List<EventTask<CandidateCertification, CandidateCertificationScheduledTaskHelper, CandidateCertificationEventTraverser>>> candidateCertificationNodes,
                                         Optional<List<EventTask<CandidateCertificationRequirement, CandidateCertificationRequirementScheduledTaskHelper, CandidateCertificationRequirementEventTraverser>>> candidateCertificationRequirementNodes,
                                         Optional<List<EventTask<JobSubmissionCertificationRequirement, JobSubmissionCertificationRequirementScheduledTaskHelper, JobSubmissionCertificationRequirementEventTraverser>>> jobSubmissionCertificationRequirementNodes,
-                                        Optional<List<EventTask<PlacementCertification, PlacementCertificationScheduledTaskHelper, PlacementCertificationEventTraverser>>> placementCertificationNodes, BullhornData bullhornData) {
+                                        Optional<List<EventTask<PlacementCertification, PlacementCertificationScheduledTaskHelper, PlacementCertificationEventTraverser>>> placementCertificationNodes,
+                                        BullhornData bullhornData) {
         this.appointmentNodes = sort(appointmentNodes);
+        this.appointmentAttendeeNodes = sort(appointmentAttendeeNodes);
         this.candidateNodes = sort(candidateNodes);
         this.candidateEducationNodes = sort(candidateEducationNodes);
         this.candidateReferenceNodes = sort(candidateReferenceNodes);
         this.candidateWorkHistoryNodes = sort(candidateWorkHistoryNodes);
+        this.categoryNodes = sort(categoryNodes);
         this.clientContactNodes = sort(clientContactNodes);
         this.clientCorporationNodes = sort(clientCorporationNodes);
         this.corporateUserNodes = sort(corporateUserNodes);
@@ -92,6 +120,8 @@ public class StandardEventWorkflowFactory implements EventWorkflowFactory {
         this.placementCommissionNodes = sort(placementCommissionNodes);
         this.placementNodes = sort(placementNodes);
         this.sendoutNodes = sort(sendoutNodes);
+        this.skillNodes = sort(skillNodes);
+        this.specialityNodes = sort(specialityNodes);
         this.taskNodes = sort(taskNodes);
         this.candidateCertificationNodes = sort(candidateCertificationNodes);
         this.candidateCertificationRequirementNodes = sort(candidateCertificationRequirementNodes);
@@ -107,6 +137,14 @@ public class StandardEventWorkflowFactory implements EventWorkflowFactory {
             AppointmentEventTraverser traverser = new AppointmentEventTraverser(event, allRelatedEntityFields.get(Appointment.class));
 
             appointmentNodes.stream().forEach((eventTask) -> {
+                eventTask.handle(traverser);
+            });
+
+            handleResult(traverser);
+        } else if (AppointmentAttendee.class.equals(type)) {
+            AppointmentAttendeeTraverser traverser = new AppointmentAttendeeTraverser(event, allRelatedEntityFields.get(AppointmentAttendee.class));
+
+            appointmentAttendeeNodes.stream().forEach((eventTask) -> {
                 eventTask.handle(traverser);
             });
 
@@ -137,6 +175,14 @@ public class StandardEventWorkflowFactory implements EventWorkflowFactory {
             CandidateWorkHistoryEventTraverser traverser = new CandidateWorkHistoryEventTraverser(event, allRelatedEntityFields.get(CandidateWorkHistory.class));
 
             candidateWorkHistoryNodes.stream().forEach((eventTask) -> {
+                eventTask.handle(traverser);
+            });
+
+            handleResult(traverser);
+        } else if (Category.class.equals(type)) {
+            CategoryEventTraverser traverser = new CategoryEventTraverser(event, allRelatedEntityFields.get(Category.class));
+
+            categoryNodes.stream().forEach((eventTask) -> {
                 eventTask.handle(traverser);
             });
 
@@ -233,6 +279,22 @@ public class StandardEventWorkflowFactory implements EventWorkflowFactory {
             SendoutEventTraverser traverser = new SendoutEventTraverser(event, allRelatedEntityFields.get(Sendout.class));
 
             sendoutNodes.stream().forEach((eventTask) -> {
+                eventTask.handle(traverser);
+            });
+
+            handleResult(traverser);
+        } else if (Skill.class.equals(type)) {
+            SkillEventTraverser traverser = new SkillEventTraverser(event, allRelatedEntityFields.get(Skill.class));
+
+            skillNodes.stream().forEach((eventTask) -> {
+                eventTask.handle(traverser);
+            });
+
+            handleResult(traverser);
+        } else if (Specialty.class.equals(type)) {
+            SpecialityEventTraverser traverser = new SpecialityEventTraverser(event, allRelatedEntityFields.get(Specialty.class));
+
+            specialityNodes.stream().forEach((eventTask) -> {
                 eventTask.handle(traverser);
             });
 
